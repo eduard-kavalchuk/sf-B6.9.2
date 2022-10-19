@@ -1,2 +1,3 @@
 ---
-# vars file for nginx-php
+nginx_documentroot_location:
+  /opt/nginx/ansible

@@ -18,10 +18,11 @@
     src: ./templates/nginx-default.j2
     dest: /etc/nginx/sites-available/default
 
-- name: Add PHP info file
+- name: Change nginx root and create a PHP info file
   shell: |
-    chmod -R 777 /var/www/html
-    echo "<?php phpinfo(); ?>" >> /var/www/html/info.php
+    mkdir -p {{ nginx_documentroot_location }}
+    chmod -R 777 {{ nginx_documentroot_location }}
+    echo "<?php phpinfo(); ?>" >> {{ nginx_documentroot_location }}/info.php
 
   notify:
     - restart-nginx
