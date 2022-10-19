@@ -1,0 +1,28 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  tags: install nginx
+
+- name: Install php7.2-fpm
+  ansible.builtin.apt:
+    name: php7.2-fpm
+    state: present
+    update_cache: false
+  tags: install php7.2-fpm
+
+- name: Add PHP support to Nginx
+  ansible.builtin.template:
+    src: ./templates/nginx-default.j2
+    dest: /etc/nginx/sites-available/default
+
+- name: Add PHP info file
+  shell: |
+    chmod -R 777 /var/www/html
+    echo "<?php phpinfo(); ?>" >> /var/www/html/info.php
+
+  notify:
+    - restart-nginx
+    - restart-php
