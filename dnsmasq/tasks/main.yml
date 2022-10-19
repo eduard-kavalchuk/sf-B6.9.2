@@ -1,0 +1,44 @@
+---
+- name: Install dnsmasq
+  ansible.builtin.apt:
+    name: dnsmasq
+    state: present
+    update_cache: false
+  tags: install
+  notify: restart
+
+- name: Configure /etc/dnsmasq.conf
+  ansible.builtin.lineinfile:
+    dest: /etc/dnsmasq.conf
+    backup: yes
+    backrefs: yes
+    state: present
+    regexp: "^#listen-address="
+    line: listen-address=127.0.0.1
+
+- name: Configure /etc/dhcp/dhclient.conf
+  ansible.builtin.lineinfile:
+    dest: /etc/dhcp/dhclient.conf
+    backup: yes
+    backrefs: yes
+    state: present
+    regexp: "^#prepend domain-name-servers 127.0.0.1;"
+    line: prepend domain-name-servers 127.0.0.1;
+
+- name: Configure /etc/resolv.conf
+  ansible.builtin.lineinfile:
+    dest: /etc/resolv.conf
+    backup: yes
+    backrefs: no
+    state: present
+    insertbefore: "^nameserver"
+    line: nameserver 127.0.0.1
+  
+  tags: configure
+  notify: restart
+
+- name: Uninstall dnsmasq
+  ansible.builtin.apt:
+    name: dnsmasq
+    state: absent
+  tags: uninstall
